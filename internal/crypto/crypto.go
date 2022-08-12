@@ -6,6 +6,8 @@ import (
 	"io"
 )
 
+const NonceSize = 24
+
 // RandSideID returns a string appropate for use
 // as the Side ID for a client.
 func RandSideID() string {
@@ -31,5 +33,3 @@ func RandNonce() [NonceSize]byte {
 	}
 	return nonce
 }
-
-const NonceSize = 24

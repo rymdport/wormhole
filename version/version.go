@@ -2,7 +2,7 @@ package version
 
 var (
 	// Default Agent identifier sent to rendezvous server
-	AgentString = "go-william"
+	AgentString = "go-rymdport"
 	// Default Agent version sent to rendezvous server
-	AgentVersion = "v1.0.6"
+	AgentVersion = "v1.1.0"
 )
