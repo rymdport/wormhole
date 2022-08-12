@@ -119,14 +119,14 @@ func (c *Client) Receive(ctx context.Context, code string) (fr *IncomingMessage,
 
 		rc.Close(ctx, rendezvous.Happy)
 
-		text := *offer.Message
-		fr.TransferBytes = len(text)
+		fr.transferText = *offer.Message
+		fr.TransferBytes = len(fr.transferText)
 		fr.TransferBytes64 = int64(fr.TransferBytes)
 		fr.UncompressedBytes = fr.TransferBytes
 		fr.UncompressedBytes64 = fr.TransferBytes64
 
 		fr.Type = TransferText
-		fr.textReader = strings.NewReader(text)
+		fr.textReader = strings.NewReader(fr.transferText)
 		return fr, nil
 	} else if offer.File != nil {
 		fr.Type = TransferFile
@@ -288,7 +288,8 @@ type IncomingMessage struct {
 	// as part of the offer from the peer and a malicious peer could lie about this.
 	FileCount int
 
-	textReader io.Reader
+	textReader   io.Reader
+	transferText string
 
 	transferInitialized bool
 	initializeTransfer  func() error
@@ -304,6 +305,12 @@ type IncomingMessage struct {
 	ctx context.Context
 }
 
+// ReadText reads received text without nthe need for a buffer and the Read([]byte) method.
+// This is more efficient but only works for text receives. File and directory transfers return an empty string.
+func (f *IncomingMessage) ReadText() string {
+	return f.transferText
+}
+
 // Read the decrypted contents sent to this client.
 func (f *IncomingMessage) Read(p []byte) (int, error) {
 	if f.readErr != nil {
@@ -312,16 +319,12 @@ func (f *IncomingMessage) Read(p []byte) (int, error) {
 
 	switch f.Type {
 	case TransferText:
-		return f.readText(p)
+		return f.textReader.Read(p)
 	case TransferFile, TransferDirectory:
 		return f.readCrypt(p)
 	default:
 		return 0, fmt.Errorf("unknown Receiver type %d", f.Type)
 	}
-}
-
-func (f *IncomingMessage) readText(p []byte) (int, error) {
-	return f.textReader.Read(p)
 }
 
 // Reject an incoming file or directory transfer. This must be
