@@ -18,9 +18,9 @@ import (
 	"time"
 
 	"github.com/klauspost/compress/zip"
-	"github.com/psanford/wormhole-william/internal/crypto"
-	"github.com/psanford/wormhole-william/rendezvous"
-	"github.com/psanford/wormhole-william/rendezvous/rendezvousservertest"
+	"github.com/rymdport/wormhole/internal/crypto"
+	"github.com/rymdport/wormhole/rendezvous"
+	"github.com/rymdport/wormhole/rendezvous/rendezvousservertest"
 )
 
 func TestWormholeSendRecvText(t *testing.T) {

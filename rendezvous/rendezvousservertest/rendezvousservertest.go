@@ -16,8 +16,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/psanford/wormhole-william/internal/crypto"
-	"github.com/psanford/wormhole-william/rendezvous/internal/msgs"
+	"github.com/rymdport/wormhole/internal/crypto"
+	"github.com/rymdport/wormhole/rendezvous/internal/msgs"
 )
 
 type TestServer struct {

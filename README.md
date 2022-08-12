@@ -1,8 +1,7 @@
 # wormhole-william
 
-wormhole-william is a Go (golang) implementation of [magic wormhole](https://magic-wormhole.readthedocs.io/en/latest/). It provides secure end-to-end encrypted file transfers between computers. The endpoints are connected using the same "wormhole code".
-
-wormhole-william is compatible with the official [python magic wormhole cli tool](https://github.com/warner/magic-wormhole).
+Wormhole is a Go implementation of [magic wormhole](https://magic-wormhole.readthedocs.io/en/latest/). It provides secure end-to-end encrypted file transfers between computers. The endpoints are connected using the same "wormhole code".
+This client is compatible with the official Python and Rust clients for magic-wormhole.
 
 Currently, wormhole-william supports:
 - sending and receiving text over the wormhole protocol
@@ -11,61 +10,7 @@ Currently, wormhole-william supports:
 
 ## Docs
 
-https://pkg.go.dev/github.com/psanford/wormhole-william/wormhole?tab=doc
-
-## CLI Usage
-
-```
-$ wormhole-william send --help
-Send a text message, file, or directory...
-
-Usage:
-  wormhole-william send [WHAT] [flags]
-
-Flags:
-      --code string       human-generated code phrase
-  -c, --code-length int   length of code (in bytes/words)
-  -h, --help              help for send
-      --hide-progress     suppress progress-bar display
-  -v, --verify            display verification string (and wait for approval)
-
-Global Flags:
-      --relay-url string   rendezvous relay to use
-
-
-$ wormhole-william receive --help
-Receive a text message, file, or directory...
-
-Usage:
-  wormhole-william receive [code] [flags]
-
-Aliases:
-  receive, recv
-
-Flags:
-  -h, --help            help for receive
-      --hide-progress   suppress progress-bar display
-  -v, --verify          display verification string (and wait for approval)
-
-Global Flags:
-      --relay-url string   rendezvous relay to use
-```
-
-### CLI tab completion
-
-The wormhole-william CLI supports shell completion, including completing the receive code.
-To enable shell completion follow the instructions from `wormhole-william shell-completion -h`.
-
-
-## Building the CLI tool
-
-wormhole-william uses go modules so it requires a version of the go tool chain >= 1.11. If you are using a version of go that supports modules you can clone the repo outside of your GOPATH and do a `go build` in the top level directory.
-
-To just install via the go tool run:
-
-```
-go install github.com/psanford/wormhole-william@latest
-```
+https://pkg.go.dev/github.com/rymdport/wormhole
 
 ## API Usage
 
@@ -80,7 +25,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/psanford/wormhole-william/wormhole"
+	"github.com/rymdport/wormhole/wormhole"
 )
 
 func sendText() {
@@ -129,12 +74,4 @@ func recvText(code string) {
 }
 ```
 
-See the [cli tool](https://github.com/psanford/wormhole-william/tree/master/cmd) and [examples](https://github.com/psanford/wormhole-william/tree/master/examples) directory for working examples of how to use the API to send and receive text, files and directories.
-
-## Third Party Users of Wormhole William
-
-- [rymdport](https://github.com/Jacalz/rymdport): A cross-platform Magic Wormhole graphical user interface
-- [riftshare](https://github.com/achhabra2/riftshare): Desktop filesharing app
-- [termshark](https://github.com/gcla/termshark): A terminal UI for tshark
-- [tmux-wormhole](https://github.com/gcla/tmux-wormhole): tmux wormhole integration
-- [wormhole-william-mobile](https://github.com/psanford/wormhole-william-mobile): Android wormhole-william app
+See the [examples](https://github.com/rymdport/wormhole/tree/master/examples) directory for working examples of how to use the API to send and receive text, files and directories.

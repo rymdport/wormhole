@@ -15,8 +15,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/psanford/wormhole-william/internal/crypto"
-	"github.com/psanford/wormhole-william/rendezvous"
+	"github.com/rymdport/wormhole/internal/crypto"
+	"github.com/rymdport/wormhole/rendezvous"
 	"golang.org/x/crypto/hkdf"
 	"golang.org/x/crypto/nacl/secretbox"
 	"salsa.debian.org/vasudev/gospake2"

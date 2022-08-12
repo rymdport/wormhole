@@ -1,4 +1,4 @@
-module github.com/psanford/wormhole-william
+module github.com/rymdport/wormhole
 
 go 1.13
 
