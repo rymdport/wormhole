@@ -120,10 +120,8 @@ func (c *Client) Receive(ctx context.Context, code string) (fr *IncomingMessage,
 		rc.Close(ctx, rendezvous.Happy)
 
 		fr.transferText = *offer.Message
-		fr.TransferBytes = len(fr.transferText)
-		fr.TransferBytes64 = int64(fr.TransferBytes)
+		fr.TransferBytes = int64(len(fr.transferText))
 		fr.UncompressedBytes = fr.TransferBytes
-		fr.UncompressedBytes64 = fr.TransferBytes64
 
 		fr.Type = TransferText
 		fr.textReader = strings.NewReader(fr.transferText)
@@ -131,19 +129,15 @@ func (c *Client) Receive(ctx context.Context, code string) (fr *IncomingMessage,
 	} else if offer.File != nil {
 		fr.Type = TransferFile
 		fr.Name = offer.File.FileName
-		fr.TransferBytes = int(offer.File.FileSize)
-		fr.TransferBytes64 = offer.File.FileSize
-		fr.UncompressedBytes = int(offer.File.FileSize)
-		fr.UncompressedBytes64 = offer.File.FileSize
+		fr.TransferBytes = offer.File.FileSize
+		fr.UncompressedBytes = offer.File.FileSize
 		fr.FileCount = 1
 		fr.ctx = ctx
 	} else if offer.Directory != nil {
 		fr.Type = TransferDirectory
 		fr.Name = offer.Directory.Dirname
-		fr.TransferBytes = int(offer.Directory.ZipSize)
-		fr.TransferBytes64 = offer.Directory.ZipSize
-		fr.UncompressedBytes = int(offer.Directory.NumBytes)
-		fr.UncompressedBytes64 = offer.Directory.NumBytes
+		fr.TransferBytes = offer.Directory.ZipSize
+		fr.UncompressedBytes = offer.Directory.NumBytes
 		fr.FileCount = int(offer.Directory.NumFiles)
 		fr.ctx = ctx
 	} else {
@@ -260,30 +254,24 @@ type IncomingMessage struct {
 	Name string
 	// The type of file transfer being offered.
 	Type TransferType
-	// Deprecated: TransferBytes has been replaced with with TransferBytes64
-	// to allow transfer of >2 GiB files on 32 bit systems
-	TransferBytes int
-	// TransferBytes64 is the offered size of the file transfer from the peer.
+	// TransferBytes is the offered size of the file transfer from the peer.
 	// This is expected to be the number of bytes sent over the network to
 	// perform the file transfer, however a malicious client could lie about this.
 	// The primary purpose of this field is to allow the user to choose to accept
 	// or reject the transfer if the file size is unexpected.
 	//
-	// For client implementation convenience, TransferBytes64 is also set for text messages.
+	// For client implementation convenience, TransferBytes is also set for text messages.
 	// Note that the message has already been fully transferred by the time this value is known.
-	TransferBytes64 int64
-	// Deprecated: UncompressedBytes has been replaced with UncompressedBytes64
-	// to allow transfers of > 2 GiB files on 32 bit systems
-	UncompressedBytes int
-	// UncompressedBytes64 is the offered size of the files on disk post decompression.
+	TransferBytes int64
+	// UncompressedBytes is the offered size of the files on disk post decompression.
 	// This is sent from the peer as part of the offer and a malicious peer could lie
 	// about this.
 	// The primary purpose of this field is to allow the user to choose to accept
 	// or reject the transfer if the file size is unexpected.
 	//
-	// For client implementation convenience, UncompressedBytes64 is also set for text messages.
+	// For client implementation convenience, UncompressedBytes is also set for text messages.
 	// Note that the message has already been fully transferred by the time this value is known.
-	UncompressedBytes64 int64
+	UncompressedBytes int64
 	// FileCount is the number of files in a TransferDirectory offer. This is sent
 	// as part of the offer from the peer and a malicious peer could lie about this.
 	FileCount int
@@ -375,7 +363,7 @@ func (f *IncomingMessage) readCrypt(p []byte) (int, error) {
 	// for empty files the sender doesn't send any records
 	// so we need to short circut the read and proceed straight
 	// to sending an "ok" ack
-	emptyFile := f.TransferBytes64 == 0
+	emptyFile := f.TransferBytes == 0
 
 	if len(f.buf) == 0 && !emptyFile {
 		rec, err := f.cryptor.readRecord()
@@ -393,7 +381,7 @@ func (f *IncomingMessage) readCrypt(p []byte) (int, error) {
 	f.buf = f.buf[n:]
 	f.readCount += int64(n)
 	f.sha256.Write(p[:n])
-	if f.readCount >= f.TransferBytes64 {
+	if f.readCount >= f.TransferBytes {
 		f.readErr = io.EOF
 
 		sum := f.sha256.Sum(nil)
