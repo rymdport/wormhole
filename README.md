@@ -3,14 +3,21 @@
 Wormhole is a Go implementation of [magic wormhole](https://magic-wormhole.readthedocs.io/en/latest/). It provides secure end-to-end encrypted file transfers between computers. The endpoints are connected using the same "wormhole code".
 This client is compatible with the official Python and Rust clients for magic-wormhole.
 
-Currently, wormhole-william supports:
-- sending and receiving text over the wormhole protocol
-- sending and receiving files over the transit protocol
-- sending and receiving directories over the transit protocol
+This repository implements some improvements that were not accepted upstream. As well as some improvements that make the library more suited for non cli usages.
+We will try to upstream as much as possible and recommend users to use upstream unless specifically needing to use this project.
 
-## Docs
+## Improvements over upstream
+- Removes the cli library for smaller module downloads (a minimalistic cli will be implemented separately).
+- Optimized the wordlist for improved performance.
+- Add a fast path for getting the contents of text recieves.
+- Updated module dependencies (using [rymdport/websocket](https://github.com/rymdport/websocket)).
+- Various other minor cleanups and code improvements.
+- Removed deprecated transfer fields.
 
-https://pkg.go.dev/github.com/rymdport/wormhole
+## Future improvements
+- Reduce the reliance on `reflect` in the libraries (see https://github.com/psanford/wormhole-william/issues/83).
+- More secure default permissions for sent files.
+- Potentially decreasing the reliance on `io.ReadSeeker` for better mobile support.
 
 ## API Usage
 
