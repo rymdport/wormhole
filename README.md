@@ -16,7 +16,6 @@ We will try to upstream as much as possible and recommend users to use upstream 
 
 ## Future improvements
 - Reduce the reliance on `reflect` in the libraries (see https://github.com/psanford/wormhole-william/issues/83).
-- More secure default permissions for sent files.
 - Potentially decreasing the reliance on `io.ReadSeeker` for better mobile support.
 
 ## API Usage
