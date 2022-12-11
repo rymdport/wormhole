@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -520,7 +519,7 @@ type zipResult struct {
 }
 
 func makeTmpZip(directoryName string, entries []DirectoryEntry) (*zipResult, error) {
-	f, err := ioutil.TempFile("", "wormhole-william-dir")
+	f, err := os.CreateTemp("", "wormhole-william-dir")
 	if err != nil {
 		return nil, err
 	}

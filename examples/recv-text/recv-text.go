@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 
@@ -30,7 +30,7 @@ func main() {
 		log.Fatalf("Expected a text message but got type %s", msg.Type)
 	}
 
-	msgBody, err := ioutil.ReadAll(msg)
+	msgBody, err := io.ReadAll(msg)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
@@ -80,7 +79,7 @@ func TestWormholeSendRecvText(t *testing.T) {
 		t.Fatalf("Recv side got unexpected err: %s", err)
 	}
 
-	msgBody, err := ioutil.ReadAll(msg)
+	msgBody, err := io.ReadAll(msg)
 	if err != nil {
 		t.Fatalf("Recv side got read err: %s", err)
 	}
@@ -123,7 +122,7 @@ func TestWormholeSendRecvText(t *testing.T) {
 		t.Fatalf("Recv side got unexpected err: %s", err)
 	}
 
-	msgBody, err = ioutil.ReadAll(msg)
+	msgBody, err = io.ReadAll(msg)
 	if err != nil {
 		t.Fatalf("Recv side got read err: %s", err)
 	}
@@ -279,7 +278,7 @@ func TestWormholeFileTransportSendRecvViaRelayServer(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got, err := ioutil.ReadAll(receiver)
+	got, err := io.ReadAll(receiver)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -397,7 +396,7 @@ func TestWormholeFileTransportRecvMidStreamCancel(t *testing.T) {
 
 	cancel()
 
-	_, err = ioutil.ReadAll(receiver)
+	_, err = io.ReadAll(receiver)
 	if err == nil {
 		t.Fatalf("Expected read error but got none")
 	}
@@ -453,7 +452,7 @@ func TestWormholeFileTransportSendMidStreamCancel(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	gotMsg, err := ioutil.ReadAll(receiver)
+	gotMsg, err := io.ReadAll(receiver)
 	if err == nil {
 		t.Fatalf("Expected read error but got none. got msg size: %d, orig_size: %d, cancel_at: %de", len(gotMsg), len(fileContent), splitR.cancelAt)
 	}
@@ -665,14 +664,14 @@ func TestWormholeDirectoryTransportSendRecvDirect(t *testing.T) {
 			Path: filepath.Join("skyjacking", "personalize.txt"),
 			Reader: func() (io.ReadCloser, error) {
 				b := bytes.NewReader(personalizeContent)
-				return ioutil.NopCloser(b), nil
+				return io.NopCloser(b), nil
 			},
 		},
 		{
 			Path: filepath.Join("skyjacking", "bodice-Maytag.txt"),
 			Reader: func() (io.ReadCloser, error) {
 				b := bytes.NewReader(bodiceContent)
-				return ioutil.NopCloser(b), nil
+				return io.NopCloser(b), nil
 			},
 		},
 	}
@@ -687,7 +686,7 @@ func TestWormholeDirectoryTransportSendRecvDirect(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got, err := ioutil.ReadAll(receiver)
+	got, err := io.ReadAll(receiver)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -702,7 +701,7 @@ func TestWormholeDirectoryTransportSendRecvDirect(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		body, err := ioutil.ReadAll(rc)
+		body, err := io.ReadAll(rc)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -769,7 +768,7 @@ func TestSendRecvEmptyFileDirect(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got, err := ioutil.ReadAll(receiver)
+	got, err := io.ReadAll(receiver)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -820,7 +819,7 @@ func TestSendRecvEmptyFileViaRelay(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got, err := ioutil.ReadAll(receiver)
+	got, err := io.ReadAll(receiver)
 	if err != nil {
 		t.Fatal(err)
 	}

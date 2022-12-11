@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -37,7 +36,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	tmpFile, err := ioutil.TempFile(wd, msg.Name+".zip.tmp")
+	tmpFile, err := os.CreateTemp(wd, msg.Name+".zip.tmp")
 	if err != nil {
 		log.Fatal(err)
 	}
