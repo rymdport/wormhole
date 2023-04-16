@@ -206,8 +206,8 @@ func (c *Client) deregisterWaiter(id uint32) {
 	delete(c.pendingMsgWaiters, id)
 }
 
-func (c *Client) readMsg(ctx context.Context, m msgs.RendezvousValue) error {
-	expectMsgType := m.GetRendezvousValue()
+func (c *Client) readMsg(ctx context.Context, m msgs.RendezvousType) error {
+	expectMsgType := m.GetType()
 
 	waiterID, ch := c.registerWaiter()
 	defer c.deregisterWaiter(waiterID)
@@ -433,7 +433,7 @@ func (c *Client) Close(ctx context.Context, mood Mood) error {
 
 // sendAndWait sends a message to the rendezvous server and waits
 // for an ack response.
-func (c *Client) sendAndWait(ctx context.Context, msg msgs.RendezvousValue) (*msgs.Ack, error) {
+func (c *Client) sendAndWait(ctx context.Context, msg msgs.RendezvousType) (*msgs.Ack, error) {
 	id, err := c.prepareMsg(msg)
 	if err != nil {
 		return nil, err
@@ -463,7 +463,7 @@ func (c *Client) sendAndWait(ctx context.Context, msg msgs.RendezvousValue) (*ms
 
 // prepareMsg populates the ID and Type fields for a message.
 // It returns the ID string or an error.
-func (c *Client) prepareMsg(msg msgs.RendezvousValue) (string, error) {
+func (c *Client) prepareMsg(msg msgs.RendezvousType) (string, error) {
 	id := crypto.RandHex(2)
 
 	ptr := reflect.TypeOf(msg)
@@ -490,7 +490,7 @@ func (c *Client) prepareMsg(msg msgs.RendezvousValue) (string, error) {
 		return id, errors.New("msg type missing required field(s): Type and/or ID")
 	}
 
-	msg.SetRendezvousValue()
+	msg.SetType()
 	return id, nil
 }
 

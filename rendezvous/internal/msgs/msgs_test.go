@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-var msgMap = map[string]RendezvousValue{
+var msgMap = map[string]RendezvousType{
 	"welcome":    &Welcome{},
 	"bind":       &Bind{},
 	"allocate":   &Allocate{},
@@ -26,7 +26,7 @@ var msgMap = map[string]RendezvousValue{
 
 func TestStructTags(t *testing.T) {
 	for n, iface := range msgMap {
-		value := iface.GetRendezvousValue()
+		value := iface.GetType()
 		if value != n {
 			t.Errorf("msgMap key / Type struct tag rendezvous_value mismatch: key=%s tag=%s struct=%T", n, value, iface)
 		}

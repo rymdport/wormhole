@@ -1,6 +1,6 @@
 package msgs
 
-type RendezvousValue interface {
-	GetRendezvousValue() string
-	SetRendezvousValue()
+type RendezvousType interface {
+	GetType() string
+	SetType()
 }

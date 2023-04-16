@@ -7,11 +7,11 @@ type Welcome struct {
 	ServerTX float64           `json:"server_tx"`
 }
 
-func (w *Welcome) SetRendezvousValue() {
+func (w *Welcome) SetType() {
 	w.Type = "welcome"
 }
 
-func (w *Welcome) GetRendezvousValue() string {
+func (w *Welcome) GetType() string {
 	return "welcome"
 }
 
@@ -32,11 +32,11 @@ type Bind struct {
 	ClientVersion []string `json:"client_version"`
 }
 
-func (b *Bind) SetRendezvousValue() {
+func (b *Bind) SetType() {
 	b.Type = "bind"
 }
 
-func (b *Bind) GetRendezvousValue() string {
+func (b *Bind) GetType() string {
 	return "bind"
 }
 
@@ -46,11 +46,11 @@ type Allocate struct {
 	ID   string `json:"id"`
 }
 
-func (a *Allocate) SetRendezvousValue() {
+func (a *Allocate) SetType() {
 	a.Type = "allocate"
 }
 
-func (a *Allocate) GetRendezvousValue() string {
+func (a *Allocate) GetType() string {
 	return "allocate"
 }
 
@@ -61,11 +61,11 @@ type Ack struct {
 	ServerTX float64 `json:"server_tx"`
 }
 
-func (a *Ack) SetRendezvousValue() {
+func (a *Ack) SetType() {
 	a.Type = "ack"
 }
 
-func (a *Ack) GetRendezvousValue() string {
+func (a *Ack) GetType() string {
 	return "ack"
 }
 
@@ -76,11 +76,11 @@ type AllocatedResp struct {
 	ServerTX  float64 `json:"server_tx"`
 }
 
-func (a *AllocatedResp) SetRendezvousValue() {
+func (a *AllocatedResp) SetType() {
 	a.Type = "allocated"
 }
 
-func (a *AllocatedResp) GetRendezvousValue() string {
+func (a *AllocatedResp) GetType() string {
 	return "allocated"
 }
 
@@ -91,11 +91,11 @@ type Claim struct {
 	Nameplate string `json:"nameplate"`
 }
 
-func (c *Claim) SetRendezvousValue() {
+func (c *Claim) SetType() {
 	c.Type = "claim"
 }
 
-func (c *Claim) GetRendezvousValue() string {
+func (c *Claim) GetType() string {
 	return "claim"
 }
 
@@ -106,11 +106,11 @@ type ClaimedResp struct {
 	ServerTX float64 `json:"server_tx"`
 }
 
-func (c *ClaimedResp) SetRendezvousValue() {
+func (c *ClaimedResp) SetType() {
 	c.Type = "claimed"
 }
 
-func (c *ClaimedResp) GetRendezvousValue() string {
+func (c *ClaimedResp) GetType() string {
 	return "claimed"
 }
 
@@ -121,11 +121,11 @@ type Open struct {
 	Mailbox string `json:"mailbox"`
 }
 
-func (o *Open) SetRendezvousValue() {
+func (o *Open) SetType() {
 	o.Type = "open"
 }
 
-func (o *Open) GetRendezvousValue() string {
+func (o *Open) GetType() string {
 	return "open"
 }
 
@@ -138,11 +138,11 @@ type Add struct {
 	Body string `json:"body"`
 }
 
-func (a *Add) SetRendezvousValue() {
+func (a *Add) SetType() {
 	a.Type = "add"
 }
 
-func (a *Add) GetRendezvousValue() string {
+func (a *Add) GetType() string {
 	return "add"
 }
 
@@ -158,11 +158,11 @@ type Message struct {
 	ServerTX float64 `json:"server_tx"`
 }
 
-func (m *Message) SetRendezvousValue() {
+func (m *Message) SetType() {
 	m.Type = "message"
 }
 
-func (m *Message) GetRendezvousValue() string {
+func (m *Message) GetType() string {
 	return "message"
 }
 
@@ -172,11 +172,11 @@ type List struct {
 	ID   string `json:"id"`
 }
 
-func (l *List) SetRendezvousValue() {
+func (l *List) SetType() {
 	l.Type = "list"
 }
 
-func (l *List) GetRendezvousValue() string {
+func (l *List) GetType() string {
 	return "list"
 }
 
@@ -191,11 +191,11 @@ type Nameplates struct {
 	ServerTX float64 `json:"server_tx"`
 }
 
-func (n *Nameplates) SetRendezvousValue() {
+func (n *Nameplates) SetType() {
 	n.Type = "nameplates"
 }
 
-func (n *Nameplates) GetRendezvousValue() string {
+func (n *Nameplates) GetType() string {
 	return "nameplates"
 }
 
@@ -206,11 +206,11 @@ type Release struct {
 	Nameplate string `json:"nameplate"`
 }
 
-func (r *Release) SetRendezvousValue() {
+func (r *Release) SetType() {
 	r.Type = "release"
 }
 
-func (r *Release) GetRendezvousValue() string {
+func (r *Release) GetType() string {
 	return "release"
 }
 
@@ -220,11 +220,11 @@ type ReleasedResp struct {
 	ServerTX float64 `json:"server_tx"`
 }
 
-func (r *ReleasedResp) SetRendezvousValue() {
+func (r *ReleasedResp) SetType() {
 	r.Type = "released"
 }
 
-func (r *ReleasedResp) GetRendezvousValue() string {
+func (r *ReleasedResp) GetType() string {
 	return "released"
 }
 
@@ -236,11 +236,11 @@ type Error struct {
 	ServerTx float64     `json:"server_tx"`
 }
 
-func (e *Error) SetRendezvousValue() {
+func (e *Error) SetType() {
 	e.Type = "error"
 }
 
-func (e *Error) GetRendezvousValue() string {
+func (e *Error) GetType() string {
 	return "error"
 }
 
@@ -251,11 +251,11 @@ type Close struct {
 	Mood    string `json:"mood"`
 }
 
-func (c *Close) SetRendezvousValue() {
+func (c *Close) SetType() {
 	c.Type = "close"
 }
 
-func (c *Close) GetRendezvousValue() string {
+func (c *Close) GetType() string {
 	return "close"
 }
 
@@ -264,11 +264,11 @@ type ClosedResp struct {
 	ServerTx float64 `json:"server_tx"`
 }
 
-func (c *ClosedResp) SetRendezvousValue() {
+func (c *ClosedResp) SetType() {
 	c.Type = "closed"
 }
 
-func (c *ClosedResp) GetRendezvousValue() string {
+func (c *ClosedResp) GetType() string {
 	return "closed"
 }
 
