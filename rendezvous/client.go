@@ -206,8 +206,8 @@ func (c *Client) deregisterWaiter(id uint32) {
 	delete(c.pendingMsgWaiters, id)
 }
 
-func (c *Client) readMsg(ctx context.Context, m interface{}) error {
-	expectMsgType := msgType(m)
+func (c *Client) readMsg(ctx context.Context, m msgs.RendezvousValue) error {
+	expectMsgType := m.GetRendezvousValue()
 
 	waiterID, ch := c.registerWaiter()
 	defer c.deregisterWaiter(waiterID)
@@ -231,24 +231,6 @@ func (c *Client) readMsg(ctx context.Context, m interface{}) error {
 			return nil
 		}
 	}
-}
-
-func msgType(msg interface{}) string {
-	ptr := reflect.TypeOf(msg)
-
-	if ptr.Kind() != reflect.Ptr {
-		panic("msg must be a pointer")
-	}
-
-	structType := ptr.Elem()
-
-	for i := 0; i < structType.NumField(); i++ {
-		field := structType.Field(i)
-		if field.Tag.Get("json") == "type" {
-			return field.Tag.Get("rendezvous_value")
-		}
-	}
-	return ""
 }
 
 // CreateMailbox allocates a nameplate, claims it, and then opens
