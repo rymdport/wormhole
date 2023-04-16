@@ -889,7 +889,7 @@ func TestDontHangOnDuplicateAddressHints(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got, err := ioutil.ReadAll(receiver)
+	got, err := io.ReadAll(receiver)
 	if err != nil {
 		t.Fatal(err)
 	}
