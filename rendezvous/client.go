@@ -433,7 +433,7 @@ func (c *Client) Close(ctx context.Context, mood Mood) error {
 
 // sendAndWait sends a message to the rendezvous server and waits
 // for an ack response.
-func (c *Client) sendAndWait(ctx context.Context, msg interface{}) (*msgs.Ack, error) {
+func (c *Client) sendAndWait(ctx context.Context, msg msgs.RendezvousValue) (*msgs.Ack, error) {
 	id, err := c.prepareMsg(msg)
 	if err != nil {
 		return nil, err
@@ -463,7 +463,7 @@ func (c *Client) sendAndWait(ctx context.Context, msg interface{}) (*msgs.Ack, e
 
 // prepareMsg populates the ID and Type fields for a message.
 // It returns the ID string or an error.
-func (c *Client) prepareMsg(msg interface{}) (string, error) {
+func (c *Client) prepareMsg(msg msgs.RendezvousValue) (string, error) {
 	id := crypto.RandHex(2)
 
 	ptr := reflect.TypeOf(msg)
@@ -475,32 +475,22 @@ func (c *Client) prepareMsg(msg interface{}) (string, error) {
 	st := ptr.Elem()
 	val := reflect.ValueOf(msg).Elem()
 
-	var (
-		foundType bool
-		foundID   bool
-	)
+	var foundID bool
 
 	for i := 0; i < st.NumField(); i++ {
 		field := st.Field(i)
-		if field.Name == "Type" {
-			msgType, _ := field.Tag.Lookup("rendezvous_value")
-			if msgType == "" {
-				return "", errors.New("type filed missing rendezvous_value struct tag")
-			}
-			ff := val.Field(i)
-			ff.SetString(msgType)
-			foundType = true
-		} else if field.Name == "ID" {
+		if field.Name == "ID" {
 			ff := val.Field(i)
 			ff.SetString(id)
 			foundID = true
 		}
 	}
 
-	if !foundID || !foundType {
+	if !foundID {
 		return id, errors.New("msg type missing required field(s): Type and/or ID")
 	}
 
+	msg.SetRendezvousValue()
 	return id, nil
 }
 
