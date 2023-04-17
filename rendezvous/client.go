@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"reflect"
 	"sync"
 	"sync/atomic"
 
@@ -433,7 +432,7 @@ func (c *Client) Close(ctx context.Context, mood Mood) error {
 
 // sendAndWait sends a message to the rendezvous server and waits
 // for an ack response.
-func (c *Client) sendAndWait(ctx context.Context, msg msgs.RendezvousType) (*msgs.Ack, error) {
+func (c *Client) sendAndWait(ctx context.Context, msg msgs.RendezvousTypeID) (*msgs.Ack, error) {
 	id, err := c.prepareMsg(msg)
 	if err != nil {
 		return nil, err
@@ -463,33 +462,9 @@ func (c *Client) sendAndWait(ctx context.Context, msg msgs.RendezvousType) (*msg
 
 // prepareMsg populates the ID and Type fields for a message.
 // It returns the ID string or an error.
-func (c *Client) prepareMsg(msg msgs.RendezvousType) (string, error) {
+func (c *Client) prepareMsg(msg msgs.RendezvousTypeID) (string, error) {
 	id := crypto.RandHex(2)
-
-	ptr := reflect.TypeOf(msg)
-
-	if ptr.Kind() != reflect.Ptr {
-		return "", errors.New("msg must be a pointer")
-	}
-
-	st := ptr.Elem()
-	val := reflect.ValueOf(msg).Elem()
-
-	var foundID bool
-
-	for i := 0; i < st.NumField(); i++ {
-		field := st.Field(i)
-		if field.Name == "ID" {
-			ff := val.Field(i)
-			ff.SetString(id)
-			foundID = true
-		}
-	}
-
-	if !foundID {
-		return id, errors.New("msg type missing required field(s): Type and/or ID")
-	}
-
+	msg.SetID(id)
 	msg.SetType()
 	return id, nil
 }

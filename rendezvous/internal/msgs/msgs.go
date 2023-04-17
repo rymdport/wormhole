@@ -40,6 +40,10 @@ func (b *Bind) GetType() string {
 	return "bind"
 }
 
+func (b *Bind) SetID(id string) {
+	b.ID = id
+}
+
 // Client sent aollocate message
 type Allocate struct {
 	Type string `json:"type" rendezvous_value:"allocate"`
@@ -52,6 +56,10 @@ func (a *Allocate) SetType() {
 
 func (a *Allocate) GetType() string {
 	return "allocate"
+}
+
+func (a *Allocate) SetID(id string) {
+	a.ID = id
 }
 
 // Server sent ack message
@@ -67,6 +75,10 @@ func (a *Ack) SetType() {
 
 func (a *Ack) GetType() string {
 	return "ack"
+}
+
+func (a *Ack) SetID(id string) {
+	a.ID = id
 }
 
 // Server sent allocated message
@@ -99,6 +111,10 @@ func (c *Claim) GetType() string {
 	return "claim"
 }
 
+func (c *Claim) SetID(id string) {
+	c.ID = id
+}
+
 // Server sent claimed message
 type ClaimedResp struct {
 	Type     string  `json:"type" rendezvous_value:"claimed"`
@@ -129,6 +145,10 @@ func (o *Open) GetType() string {
 	return "open"
 }
 
+func (o *Open) SetID(id string) {
+	o.ID = id
+}
+
 // Client sent add message to add a message to a mailbox.
 type Add struct {
 	Type  string `json:"type" rendezvous_value:"add"`
@@ -144,6 +164,10 @@ func (a *Add) SetType() {
 
 func (a *Add) GetType() string {
 	return "add"
+}
+
+func (a *Add) SetID(id string) {
+	a.ID = id
 }
 
 // Server sent message message
@@ -166,6 +190,10 @@ func (m *Message) GetType() string {
 	return "message"
 }
 
+func (m *Message) SetID(id string) {
+	m.ID = id
+}
+
 // Client sent list message to list nameplates.
 type List struct {
 	Type string `json:"type" rendezvous_value:"list"`
@@ -178,6 +206,10 @@ func (l *List) SetType() {
 
 func (l *List) GetType() string {
 	return "list"
+}
+
+func (l *List) SetID(id string) {
+	l.ID = id
 }
 
 // Server sent nameplates message.
@@ -212,6 +244,10 @@ func (r *Release) SetType() {
 
 func (r *Release) GetType() string {
 	return "release"
+}
+
+func (r *Release) SetID(id string) {
+	r.ID = id
 }
 
 // Server sent response to release request.
@@ -257,6 +293,10 @@ func (c *Close) SetType() {
 
 func (c *Close) GetType() string {
 	return "close"
+}
+
+func (c *Close) SetID(id string) {
+	c.ID = id
 }
 
 type ClosedResp struct {
