@@ -433,13 +433,12 @@ func (c *Client) Close(ctx context.Context, mood Mood) error {
 // sendAndWait sends a message to the rendezvous server and waits
 // for an ack response.
 func (c *Client) sendAndWait(ctx context.Context, msg msgs.RendezvousTypeID) (*msgs.Ack, error) {
-	id, err := c.prepareMsg(msg)
-	if err != nil {
-		return nil, err
-	}
+	id := crypto.RandHex(2)
+	msg.SetID(id)
+	msg.SetType()
 
 	c.sendCmdMu.Lock()
-	err = wsjson.Write(ctx, c.wsClient, msg)
+	err := wsjson.Write(ctx, c.wsClient, msg)
 	if err != nil {
 		c.sendCmdMu.Unlock()
 		return nil, err
@@ -458,15 +457,6 @@ func (c *Client) sendAndWait(ctx context.Context, msg msgs.RendezvousTypeID) (*m
 	}
 
 	return &ack, nil
-}
-
-// prepareMsg populates the ID and Type fields for a message.
-// It returns the ID string or an error.
-func (c *Client) prepareMsg(msg msgs.RendezvousTypeID) (string, error) {
-	id := crypto.RandHex(2)
-	msg.SetID(id)
-	msg.SetType()
-	return id, nil
 }
 
 func (c *Client) agentID() (string, string) {
