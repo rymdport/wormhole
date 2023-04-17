@@ -108,6 +108,10 @@ var wsUpgrader = websocket.Upgrader{
 }
 
 func prepareServerMsg(msg interface{}) {
+	if r, ok := msg.(msgs.RendezvousType); ok {
+		r.SetType()
+	}
+
 	ptr := reflect.TypeOf(msg)
 
 	if ptr.Kind() != reflect.Ptr {
@@ -125,14 +129,7 @@ func prepareServerMsg(msg interface{}) {
 	for i := 0; i < st.NumField(); i++ {
 		field := st.Field(i)
 		jsonName := field.Tag.Get("json")
-		if jsonName == "type" {
-			msgType := field.Tag.Get("rendezvous_value")
-			if msgType == "" {
-				panic("Type filed missing rendezvous_value struct tag")
-			}
-			ff := val.Field(i)
-			ff.SetString(msgType)
-		} else if jsonName == "ServerTX" {
+		if jsonName == "ServerTX" {
 			ff := val.Field(i)
 			ff.SetFloat(float64(time.Now().UnixNano()) / float64(time.Second))
 		}
