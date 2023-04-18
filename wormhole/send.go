@@ -153,7 +153,7 @@ func (c *Client) SendText(ctx context.Context, msg string, opts ...SendOption) (
 		defer collector.close()
 
 		var answer answerMsg
-		err = collector.waitFor(&answer)
+		err = collector.waitForAnswer(&answer)
 		if err != nil {
 			sendErr(err)
 			return
@@ -340,7 +340,7 @@ func (c *Client) sendFileDirectory(ctx context.Context, offer *offerMsg, r io.Re
 		defer collector.close()
 
 		var answer answerMsg
-		err = collector.waitFor(&answer)
+		err = collector.waitForAnswer(&answer)
 		if err != nil {
 			sendErr(err)
 			return
