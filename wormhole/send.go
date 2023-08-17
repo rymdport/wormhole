@@ -458,7 +458,7 @@ func (c *Client) SendFile(ctx context.Context, fileName string, r io.ReadSeeker,
 		},
 	}
 
-	return c.sendFileDirectory(ctx, offer, ioutil.NopCloser(r), opts...)
+	return c.sendFileDirectory(ctx, offer, io.NopCloser(r), opts...)
 }
 
 // A DirectoryEntry represents a single file to be sent by SendDirectory
