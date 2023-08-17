@@ -1,6 +1,6 @@
 package version
 
-var (
+const (
 	// Default Agent identifier sent to rendezvous server
 	AgentString = "go-rymdport"
 	// Default Agent version sent to rendezvous server
