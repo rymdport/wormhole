@@ -53,7 +53,7 @@ type Client struct {
 	VerifierOk func(verifier string) bool
 }
 
-var (
+const (
 	// WormholeCLIAppID is the AppID used by the python magic wormhole
 	// client. In order to interoperate with that client you must use
 	// the same AppID.

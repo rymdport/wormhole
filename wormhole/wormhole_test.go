@@ -30,9 +30,6 @@ func TestWormholeSendRecvText(t *testing.T) {
 
 	url := rs.WebSocketURL()
 
-	// disable transit relay
-	DefaultTransitRelayAddress = ""
-
 	var c0Verifier string
 	var c0 Client
 	c0.RendezvousURL = url
@@ -48,6 +45,10 @@ func TestWormholeSendRecvText(t *testing.T) {
 		c1Verifier = code
 		return true
 	}
+
+	// disable transit relay for this test
+	c0.TransitRelayAddress = ""
+	c1.TransitRelayAddress = ""
 
 	secretText := "Hialeah-deviltry"
 	code, statusChan, err := c0.SendText(ctx, secretText)
@@ -161,9 +162,6 @@ func TestVerifierAbort(t *testing.T) {
 
 	url := rs.WebSocketURL()
 
-	// disable transit relay
-	DefaultTransitRelayAddress = ""
-
 	var c0 Client
 	c0.RendezvousURL = url
 	c0.VerifierOk = func(code string) bool {
@@ -175,6 +173,10 @@ func TestVerifierAbort(t *testing.T) {
 	c1.VerifierOk = func(code string) bool {
 		return true
 	}
+
+	// disable transit relay for this test
+	c0.TransitRelayAddress = ""
+	c1.TransitRelayAddress = ""
 
 	secretText := "minced-incalculably"
 	code, statusChan, err := c0.SendText(ctx, secretText)
@@ -204,14 +206,15 @@ func TestWormholeFileReject(t *testing.T) {
 
 	url := rs.WebSocketURL()
 
-	// disable transit relay for this test
-	DefaultTransitRelayAddress = ""
-
 	var c0 Client
 	c0.RendezvousURL = url
 
 	var c1 Client
 	c1.RendezvousURL = url
+
+	// disable transit relay for this test
+	c0.TransitRelayAddress = ""
+	c1.TransitRelayAddress = ""
 
 	fileContent := make([]byte, 1<<16)
 	for i := 0; i < len(fileContent); i++ {
@@ -633,9 +636,6 @@ func TestWormholeDirectoryTransportSendRecvDirect(t *testing.T) {
 
 	url := rs.WebSocketURL()
 
-	// disable transit relay for this test
-	DefaultTransitRelayAddress = ""
-
 	var c0Verifier string
 	var c0 Client
 	c0.RendezvousURL = url
@@ -651,6 +651,10 @@ func TestWormholeDirectoryTransportSendRecvDirect(t *testing.T) {
 		c1Verifier = code
 		return true
 	}
+
+	// disable transit relay for this test
+	c0.TransitRelayAddress = ""
+	c1.TransitRelayAddress = ""
 
 	personalizeContent := make([]byte, 1<<16)
 	for i := 0; i < len(personalizeContent); i++ {
@@ -741,8 +745,6 @@ func TestSendRecvEmptyFileDirect(t *testing.T) {
 	defer rs.Close()
 
 	url := rs.WebSocketURL()
-
-	DefaultTransitRelayAddress = ""
 
 	relayServer := newTestRelayServer()
 	defer relayServer.close()
