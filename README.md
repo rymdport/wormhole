@@ -10,10 +10,11 @@ We will try to upstream as much as possible and recommend users to use upstream 
 - Removes the cli library for smaller module downloads (a minimalistic cli will be implemented in a different repository).
 - Optimized the wordlist for improved performance.
 - Add a fast path for getting the contents of text recieves.
-- Updated module dependencies (using [rymdport/websocket](https://github.com/rymdport/websocket)).
+- Updated module dependencies.
 - Various other minor cleanups and code improvements.
 - Removed deprecated transfer fields.
 - Removed all uses of runtime reflection from the API.
+- Update to newer minimum Go version and switch to new APIs.
 
 ## Future improvements
 - Potentially decreasing the reliance on `io.ReadSeeker` for better mobile support.
