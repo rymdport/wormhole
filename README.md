@@ -7,14 +7,14 @@ This repository implements some improvements that were not accepted upstream. As
 We will try to upstream as much as possible and recommend users to use upstream unless specifically needing to use this project.
 
 ## Improvements over upstream
-- Removes the cli library for smaller module downloads (a minimalistic cli will be implemented in a different repository).
-- Optimized the wordlist for improved performance.
-- Add a fast path for getting the contents of text recieves.
-- Updated module dependencies.
-- Various other minor cleanups and code improvements.
-- Removed deprecated transfer fields.
-- Removed all uses of runtime reflection from the API.
-- Update to newer minimum Go version and switch to new APIs.
+- Converted a few global variables into constants.
+- Optimized the wordlist package for improved performance.
+- Added a fast path for getting the contents of text receives.
+- Removed all usage of runtime reflection and replace it with faster type-checked code.
+- Updated minimum Go version to 1.19 and updated code to use newer features.
+- Updated dependencies to newer versions for performance and security reasons.
+- Removed deprecated APIs.
+- Various other improvements, cleanups and code optimizations.
 
 ## Future improvements
 - Potentially decreasing the reliance on `io.ReadSeeker` for better mobile support.
