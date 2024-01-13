@@ -67,8 +67,8 @@ type Client struct {
 	mailboxMsgs           []MailboxEvent
 	pendingMailboxWaiters map[uint32]chan int
 
-	pendingMsgIDCntr     uint32
-	pendingMsgWaiterCntr uint32
+	pendingMsgIDCntr     atomic.Uint32
+	pendingMsgWaiterCntr atomic.Uint32
 
 	sendCmdMu sync.Mutex
 
@@ -76,7 +76,7 @@ type Client struct {
 	pendingMsgs       []pendingMsg
 	pendingMsgWaiters map[uint32]chan uint32
 
-	clientState clientState
+	clientState atomic.Int32
 	err         error
 }
 
@@ -114,7 +114,7 @@ func (c clientState) String() string {
 }
 
 func (c *Client) closeWithError(err error) {
-	atomic.StoreInt32((*int32)(&c.clientState), int32(stateError))
+	c.clientState.Store(int32(stateError))
 	c.err = err
 }
 
@@ -126,9 +126,9 @@ type ConnectInfo struct {
 // Connect opens a connection and binds to the rendezvous server. It
 // returns the Welcome information the server responds with.
 func (c *Client) Connect(ctx context.Context) (*ConnectInfo, error) {
-	swapped := atomic.CompareAndSwapInt32((*int32)(&c.clientState), int32(statePending), int32(stateOpen))
+	swapped := c.clientState.CompareAndSwap(int32(statePending), int32(stateOpen))
 	if !swapped {
-		return nil, fmt.Errorf("current client state %s != pending, cannot connect", c.clientState)
+		return nil, fmt.Errorf("current client state %s != pending, cannot connect", clientState(c.clientState.Load()))
 	}
 
 	var err error
@@ -186,7 +186,7 @@ func (c *Client) searchPendingMsgs(ctx context.Context, msgType string) *pending
 }
 
 func (c *Client) registerWaiter() (uint32, <-chan uint32) {
-	nextID := atomic.AddUint32(&c.pendingMsgWaiterCntr, 1)
+	nextID := c.pendingMsgWaiterCntr.Add(1)
 	ch := make(chan uint32, 1)
 
 	c.pendingMsgMu.Lock()
@@ -372,7 +372,7 @@ OUTER:
 }
 
 func (c *Client) registerMailboxWaiter() (uint32, <-chan int) {
-	nextID := atomic.AddUint32(&c.pendingMsgWaiterCntr, 1)
+	nextID := c.pendingMsgWaiterCntr.Add(1)
 	ch := make(chan int, 1)
 
 	c.pendingMsgMu.Lock()
@@ -608,7 +608,7 @@ func (c *Client) readMessages(ctx context.Context) {
 			}
 			c.pendingMsgMu.Unlock()
 		} else {
-			nextID := atomic.AddUint32(&c.pendingMsgIDCntr, 1)
+			nextID := c.pendingMsgIDCntr.Add(1)
 
 			c.pendingMsgMu.Lock()
 			c.pendingMsgs = append(c.pendingMsgs, pendingMsg{
