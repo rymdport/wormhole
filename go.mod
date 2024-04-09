@@ -6,7 +6,7 @@ require (
 	github.com/gorilla/websocket v1.5.1
 	github.com/klauspost/compress v1.17.4
 	golang.org/x/crypto v0.18.0
-	nhooyr.io/websocket v1.8.10
+	nhooyr.io/websocket v1.8.11
 	salsa.debian.org/vasudev/gospake2 v0.0.0-20210510093858-d91629950ad1
 )
 
