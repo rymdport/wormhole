@@ -3,12 +3,15 @@
 Wormhole is a Go implementation of [magic wormhole](https://magic-wormhole.readthedocs.io/en/latest/). It provides secure end-to-end encrypted file transfers between computers. The endpoints are connected using the same "wormhole code".
 This client is compatible with the official Python and Rust clients for magic-wormhole.
 
-This repository implements some improvements that were not accepted upstream. As well as some improvements that make the library more suited for non cli usages.
-We will try to upstream as much as possible and recommend users to use upstream unless specifically needing to use this project.
+This repository implements various improvements that were not accepted upstream and some that would have required breaking changes.
+The goal here is to have a faster release cadance and be more actively maintained. Any patches that can be upstreamed will be upstreamed.
 
 ## Improvements over upstream
-- Converted a few global variables into constants.
-- Optimized the wordlist package for improved performance.
+- Faster release cycle and more actively maintained.
+- Contains various code improvements and moderinisations that would have required breaking changes. 
+  - Converted many global variables into constants.
+  - Optimized the `wordlist` package for improved performance and memory usage.
+  - Removed deprecated APIs.
 - Added a fast path for getting the contents of text receives.
 - Removed all usage of runtime reflection and replace it with faster type-checked code.
 - Updated minimum Go version to 1.19 and updated code to use newer features.
