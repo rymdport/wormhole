@@ -176,7 +176,7 @@ func (c *Client) Receive(ctx context.Context, code string) (fr *IncomingMessage,
 			rc.Close(ctx, mood)
 		}()
 
-		var errStr = "transfer rejected"
+		errStr := "transfer rejected"
 		answer := &genericMessage{
 			Error: &errStr,
 		}

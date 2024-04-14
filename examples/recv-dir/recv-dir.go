@@ -71,7 +71,7 @@ func main() {
 		}
 
 		dir := filepath.Dir(p)
-		err = os.MkdirAll(dir, 0777)
+		err = os.MkdirAll(dir, 0o777)
 		if err != nil {
 			log.Fatalf("Failed to mkdirall %s: %s", dir, err)
 		}

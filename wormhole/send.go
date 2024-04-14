@@ -601,7 +601,6 @@ func readSeekerSize(r io.ReadSeeker) (int64, error) {
 	}
 
 	return size, nil
-
 }
 
 type sendOptions struct {

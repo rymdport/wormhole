@@ -241,8 +241,7 @@ type genericMessage struct {
 	Error       *string         `json:"error,omitempty"`
 }
 
-type appVersionsMsg struct {
-}
+type appVersionsMsg struct{}
 
 type answerMsg struct {
 	MessageAck string `json:"message_ack,omitempty"`

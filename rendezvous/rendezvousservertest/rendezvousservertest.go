@@ -51,14 +51,12 @@ func (ts *TestServer) WebSocketURL() string {
 	u, err := url.Parse(ts.URL)
 	if err != nil {
 		panic(err)
-
 	}
 
 	u.Scheme = "ws"
 	u.Path = "/ws"
 
 	return u.String()
-
 }
 
 type mailbox struct {
