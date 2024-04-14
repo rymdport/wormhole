@@ -212,7 +212,7 @@ func (ts *TestServer) handleWS(w http.ResponseWriter, r *http.Request) {
 		sendMsg(ack)
 	}
 
-	errMsg := func(id string, orig interface{}, reason error) {
+	errMsg := func(_ string, orig interface{}, reason error) {
 		errPacket := &msgs.Error{
 			Error: reason.Error(),
 			Orig:  orig,
