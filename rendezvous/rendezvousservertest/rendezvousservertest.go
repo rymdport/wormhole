@@ -250,13 +250,13 @@ func (ts *TestServer) handleWS(w http.ResponseWriter, r *http.Request) {
 		case *msgs.Bind:
 			if sideID != "" {
 				ackMsg(m.ID)
-				errMsg(m.ID, m, fmt.Errorf("already bound"))
+				errMsg(m.ID, m, errors.New("already bound"))
 				continue
 			}
 
 			if m.Side == "" {
 				ackMsg(m.ID)
-				errMsg(m.ID, m, fmt.Errorf("bind requires 'side'"))
+				errMsg(m.ID, m, errors.New("bind requires 'side'"))
 				continue
 			}
 
@@ -287,7 +287,7 @@ func (ts *TestServer) handleWS(w http.ResponseWriter, r *http.Request) {
 			ts.mu.Unlock()
 
 			if nameplate < 1 {
-				errMsg(m.ID, m, fmt.Errorf("failed to allocate nameplate"))
+				errMsg(m.ID, m, errors.New("failed to allocate nameplate"))
 				continue
 			}
 

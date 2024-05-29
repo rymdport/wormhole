@@ -175,7 +175,7 @@ func (c *Client) SendText(ctx context.Context, msg string, opts ...SendOption) (
 			close(ch)
 			return
 		} else {
-			sendErr(fmt.Errorf("unexpected answer"))
+			sendErr(errors.New("unexpected answer"))
 			return
 		}
 	}()
@@ -346,7 +346,7 @@ func (c *Client) sendFileDirectory(ctx context.Context, offer *offerMsg, r io.Re
 		}
 
 		if answer.FileAck != "ok" {
-			sendErr(fmt.Errorf("unexpected answer"))
+			sendErr(errors.New("unexpected answer"))
 			return
 		}
 
