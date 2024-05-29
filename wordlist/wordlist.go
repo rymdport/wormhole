@@ -529,7 +529,8 @@ var Odd = [length]string{
 
 // ChooseWords creates a list of words from the wordlist.
 func ChooseWords(count uint) string {
-	words := make([]string, count)
+	words := strings.Builder{}
+	words.Grow(int(count) * 9)
 
 	buf := make([]byte, count)
 	_, err := rand.Read(buf)
@@ -538,12 +539,17 @@ func ChooseWords(count uint) string {
 	}
 
 	for i, wordIndex := range buf {
+		word := Even[wordIndex]
 		if i%2 == 0 {
-			words[i] = Odd[wordIndex]
-		} else {
-			words[i] = Even[wordIndex]
+			word = Odd[wordIndex]
+		}
+
+		words.WriteString(word)
+
+		if i != len(buf)-1 {
+			words.WriteByte('-')
 		}
 	}
 
-	return strings.Join(words, "-")
+	return words.String()
 }
