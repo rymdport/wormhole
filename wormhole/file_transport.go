@@ -288,7 +288,7 @@ func (t *fileTransport) connectToRelay(ctx context.Context, addr string, success
 		return
 	}
 
-	t.directRecvHandshake(ctx, addr, conn, successChan, failChan)
+	t.directRecvHandshake(addr, conn, successChan, failChan)
 }
 
 func (t *fileTransport) connectToSingleHost(ctx context.Context, addr string, successChan chan net.Conn, failChan chan string) {
@@ -299,10 +299,10 @@ func (t *fileTransport) connectToSingleHost(ctx context.Context, addr string, su
 		return
 	}
 
-	t.directRecvHandshake(ctx, addr, conn, successChan, failChan)
+	t.directRecvHandshake(addr, conn, successChan, failChan)
 }
 
-func (t *fileTransport) directRecvHandshake(ctx context.Context, addr string, conn net.Conn, successChan chan net.Conn, failChan chan string) {
+func (t *fileTransport) directRecvHandshake(addr string, conn net.Conn, successChan chan net.Conn, failChan chan string) {
 	expectHeader := t.senderHandshakeHeader()
 
 	gotHeader := make([]byte, len(expectHeader))

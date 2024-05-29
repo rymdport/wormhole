@@ -167,7 +167,7 @@ func (c *Client) Connect(ctx context.Context) (*ConnectInfo, error) {
 	return &info, nil
 }
 
-func (c *Client) searchPendingMsgs(ctx context.Context, msgType string) *pendingMsg {
+func (c *Client) searchPendingMsgs(msgType string) *pendingMsg {
 	c.pendingMsgMu.Lock()
 	defer c.pendingMsgMu.Unlock()
 
@@ -218,7 +218,7 @@ func (c *Client) readMsg(ctx context.Context, m msgs.RendezvousType) error {
 			return ctx.Err()
 		}
 
-		msg := c.searchPendingMsgs(ctx, expectMsgType)
+		msg := c.searchPendingMsgs(expectMsgType)
 		if msg != nil {
 
 			err := json.Unmarshal(msg.raw, m)
