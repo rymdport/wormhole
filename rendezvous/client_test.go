@@ -75,7 +75,7 @@ func TestBasicClient(t *testing.T) {
 		Body:  body0,
 	}
 
-	if !reflect.DeepEqual(expectMsg, msg) {
+	if expectMsg != msg {
 		t.Fatalf("Message mismatch got=%+v, expect=%+v", msg, expectMsg)
 	}
 
@@ -100,7 +100,7 @@ func TestBasicClient(t *testing.T) {
 		Body:  body1,
 	}
 
-	if !reflect.DeepEqual(expectMsg, msg) {
+	if expectMsg != msg {
 		t.Fatalf("Message mismatch got=%+v, expect=%+v", msg, expectMsg)
 	}
 
