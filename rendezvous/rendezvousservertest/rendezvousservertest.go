@@ -298,7 +298,7 @@ func (ts *TestServer) handleWS(w http.ResponseWriter, r *http.Request) {
 		case *msgs.Claim:
 			ackMsg(m.ID)
 
-			nameplate, err := strconv.Atoi(m.Nameplate)
+			nameplate, err := strconv.ParseUint(m.Nameplate, 10, 16)
 			if err != nil {
 				panic(fmt.Sprintf("nameplate %s is not an int", m.Nameplate))
 			}
@@ -390,7 +390,7 @@ func (ts *TestServer) handleWS(w http.ResponseWriter, r *http.Request) {
 		case *msgs.Release:
 			ackMsg(m.ID)
 
-			nameplate, err := strconv.Atoi(m.Nameplate)
+			nameplate, err := strconv.ParseUint(m.Nameplate, 10, 16)
 			if err != nil {
 				errMsg(m.ID, m, errors.New("no nameplate found"))
 				continue
