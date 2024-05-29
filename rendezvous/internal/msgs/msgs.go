@@ -1,6 +1,6 @@
 package msgs
 
-// Server sent wecome message
+// Welcome is sent by the server.
 type Welcome struct {
 	Type     string            `json:"type" rendezvous_value:"welcome"`
 	Welcome  WelcomeServerInfo `json:"welcome"`
@@ -21,7 +21,7 @@ type WelcomeServerInfo struct {
 	Error             string `json:"error"`
 }
 
-// Client sent bind message
+// Bind is sent by the client.
 type Bind struct {
 	Type  string `json:"type" rendezvous_value:"bind"`
 	ID    string `json:"id"`
@@ -44,7 +44,7 @@ func (b *Bind) SetID(id string) {
 	b.ID = id
 }
 
-// Client sent aollocate message
+// Allocate is sent by the client.
 type Allocate struct {
 	Type string `json:"type" rendezvous_value:"allocate"`
 	ID   string `json:"id"`
@@ -62,7 +62,7 @@ func (a *Allocate) SetID(id string) {
 	a.ID = id
 }
 
-// Server sent ack message
+// Ack is sent by the server.
 type Ack struct {
 	Type     string  `json:"type" rendezvous_value:"ack"`
 	ID       string  `json:"id"`
@@ -81,7 +81,7 @@ func (a *Ack) SetID(id string) {
 	a.ID = id
 }
 
-// Server sent allocated message
+// AllocatedResp is sent by the server.
 type AllocatedResp struct {
 	Type      string  `json:"type" rendezvous_value:"allocated"`
 	Nameplate string  `json:"nameplate"`
@@ -96,7 +96,7 @@ func (a *AllocatedResp) GetType() string {
 	return "allocated"
 }
 
-// Client sent claim message
+// Claim is sent by the client.
 type Claim struct {
 	Type      string `json:"type" rendezvous_value:"claim"`
 	ID        string `json:"id"`
@@ -115,7 +115,7 @@ func (c *Claim) SetID(id string) {
 	c.ID = id
 }
 
-// Server sent claimed message
+// ClaimedResp is sent by the server.
 type ClaimedResp struct {
 	Type     string  `json:"type" rendezvous_value:"claimed"`
 	Mailbox  string  `json:"mailbox"`
@@ -130,7 +130,7 @@ func (c *ClaimedResp) GetType() string {
 	return "claimed"
 }
 
-// Client sent open message
+// Open is sent by the client.
 type Open struct {
 	Type    string `json:"type" rendezvous_value:"open"`
 	ID      string `json:"id"`
@@ -149,7 +149,7 @@ func (o *Open) SetID(id string) {
 	o.ID = id
 }
 
-// Client sent add message to add a message to a mailbox.
+// Add is sent by the client to add a message to a mailbox.
 type Add struct {
 	Type  string `json:"type" rendezvous_value:"add"`
 	ID    string `json:"id"`
@@ -170,7 +170,7 @@ func (a *Add) SetID(id string) {
 	a.ID = id
 }
 
-// Server sent message message
+// Message is sent by the server.
 type Message struct {
 	Type  string `json:"type" rendezvous_value:"message"`
 	ID    string `json:"id"`
@@ -194,7 +194,7 @@ func (m *Message) SetID(id string) {
 	m.ID = id
 }
 
-// Client sent list message to list nameplates.
+// List is sent by the client to list nameplates.
 type List struct {
 	Type string `json:"type" rendezvous_value:"list"`
 	ID   string `json:"id"`
@@ -212,7 +212,7 @@ func (l *List) SetID(id string) {
 	l.ID = id
 }
 
-// Server sent nameplates message.
+// Nameplates is a message sent by the servermessage.
 // The server sends this in response to ListMsg.
 // It contains the list of active nameplates.
 type Nameplates struct {
@@ -231,7 +231,7 @@ func (n *Nameplates) GetType() string {
 	return "nameplates"
 }
 
-// Client sent release message to release a nameplate.
+// Release is sent by the client to release a nameplate.
 type Release struct {
 	Type      string `json:"type" rendezvous_value:"release"`
 	ID        string `json:"id"`
@@ -250,7 +250,7 @@ func (r *Release) SetID(id string) {
 	r.ID = id
 }
 
-// Server sent response to release request.
+// ReleasedResp is sent by the server to release a request.
 type ReleasedResp struct {
 	Type     string  `json:"type" rendezvous_value:"released"`
 	ServerTX float64 `json:"server_tx"`
@@ -264,7 +264,7 @@ func (r *ReleasedResp) GetType() string {
 	return "released"
 }
 
-// Server sent error message
+// Error is sent by the server to indicate an error.
 type Error struct {
 	Type     string      `json:"type" rendezvous_value:"error"`
 	Error    string      `json:"error"`
