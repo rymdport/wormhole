@@ -527,18 +527,21 @@ var Odd = [length]string{
 	"yucatan",
 }
 
-func ChooseWords(count int) string {
+// ChooseWords creates a list of words from the wordlist.
+func ChooseWords(count uint) string {
 	words := make([]string, count)
-	b := make([]byte, 1)
-	for i := 0; i < count; i++ {
-		_, err := rand.Read(b)
-		if err != nil {
-			panic(err)
-		}
+
+	buf := make([]byte, count)
+	_, err := rand.Read(buf)
+	if err != nil {
+		panic(err)
+	}
+
+	for i, wordIndex := range buf {
 		if i%2 == 0 {
-			words[i] = Odd[b[0]]
+			words[i] = Odd[wordIndex]
 		} else {
-			words[i] = Even[b[0]]
+			words[i] = Even[wordIndex]
 		}
 	}
 

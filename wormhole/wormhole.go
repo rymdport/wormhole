@@ -40,7 +40,7 @@ type Client struct {
 	// PassPhraseComponentLength is the number of words to use
 	// when generating a passprase. Any value less than 2 will
 	// default to 2.
-	PassPhraseComponentLength int
+	PassPhraseComponentLength uint
 
 	// VerifierOk specifies an optional hook to be called before
 	// transmitting/receiving the encrypted payload.
@@ -80,7 +80,7 @@ func (c *Client) appID() string {
 	return WormholeCLIAppID
 }
 
-func (c *Client) wordCount() int {
+func (c *Client) wordCount() uint {
 	if c.PassPhraseComponentLength > 1 {
 		return c.PassPhraseComponentLength
 	} else {
