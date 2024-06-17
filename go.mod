@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/gorilla/websocket v1.5.1
-	github.com/klauspost/compress v1.17.4
+	github.com/klauspost/compress v1.17.9
 	golang.org/x/crypto v0.23.0
 	nhooyr.io/websocket v1.8.11
 	salsa.debian.org/vasudev/gospake2 v0.0.0-20210510093858-d91629950ad1
