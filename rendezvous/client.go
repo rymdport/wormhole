@@ -9,11 +9,11 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/coder/websocket"
+	"github.com/coder/websocket/wsjson"
 	"github.com/rymdport/wormhole/internal/crypto"
 	"github.com/rymdport/wormhole/rendezvous/internal/msgs"
 	"github.com/rymdport/wormhole/version"
-	"nhooyr.io/websocket"
-	"nhooyr.io/websocket/wsjson"
 )
 
 // NewClient returns a Rendezvous client. URL is the websocket
