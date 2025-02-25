@@ -683,8 +683,7 @@ func (cc *clientProtocol) Collect(msgTypes ...collectType) (*msgCollector, error
 }
 
 func nameplateFromCode(code string) (string, error) {
-	nameplate := strings.SplitN(code, "-", 2)[0]
-
+	nameplate, _, _ := strings.Cut(code, "-")
 	_, err := strconv.Atoi(nameplate)
 	if err != nil {
 		return "", errors.New("non-numeric nameplate")

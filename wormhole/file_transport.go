@@ -199,7 +199,7 @@ func (t *fileTransport) connectViaRelay(otherTransit *transitMsg) (net.Conn, err
 
 	connectTimeout := time.After(5 * time.Second)
 
-	for i := 0; i < count; i++ {
+	for range count {
 		select {
 		case <-failChan:
 		case conn = <-successChan:
@@ -274,6 +274,7 @@ func (t *fileTransport) connectToRelay(ctx context.Context, addr string, success
 		failChan <- addr
 		return
 	}
+
 	gotOk := make([]byte, 3)
 	_, err = io.ReadFull(conn, gotOk)
 	if err != nil {
@@ -419,7 +420,7 @@ func (t *fileTransport) senderHandshakeHeader() []byte {
 		panic(err)
 	}
 
-	return []byte(fmt.Sprintf("transit sender %x ready\n\n", out))
+	return fmt.Appendf(nil, "transit sender %x ready\n\n", out)
 }
 
 func (t *fileTransport) receiverHandshakeHeader() []byte {
@@ -433,7 +434,7 @@ func (t *fileTransport) receiverHandshakeHeader() []byte {
 		panic(err)
 	}
 
-	return []byte(fmt.Sprintf("transit receiver %x ready\n\n", out))
+	return fmt.Appendf(nil, "transit receiver %x ready\n\n", out)
 }
 
 func (t *fileTransport) relayHandshakeHeader() []byte {
@@ -448,8 +449,7 @@ func (t *fileTransport) relayHandshakeHeader() []byte {
 	}
 
 	sideID := crypto.RandHex(8)
-
-	return []byte(fmt.Sprintf("please relay %x for side %s\n", out, sideID))
+	return fmt.Appendf(nil, "please relay %x for side %s\n", out, sideID)
 }
 
 // Test option to disable local listeners

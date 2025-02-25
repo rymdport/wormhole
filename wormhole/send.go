@@ -423,7 +423,7 @@ func (c *Client) sendFileDirectory(ctx context.Context, offer *offerMsg, r io.Re
 		}
 
 		shaSum := hex.EncodeToString(hasher.Sum(nil))
-		if strings.ToLower(ack.SHA256) != shaSum {
+		if !strings.EqualFold(ack.SHA256, shaSum) {
 			sendErr(fmt.Errorf("receiver sha256 mismatch %s vs %s", ack.SHA256, shaSum))
 			return
 		}
@@ -506,16 +506,9 @@ type zipResult struct {
 }
 
 func makeTmpZip(directoryName string, entries []DirectoryEntry) (*zipResult, error) {
-	f, err := os.CreateTemp("", "wormhole-william-dir")
-	if err != nil {
-		return nil, err
-	}
-
 	if len(entries) < 1 {
 		return nil, errors.New("no files provided")
 	}
-
-	defer os.Remove(f.Name())
 
 	if strings.TrimSpace(directoryName) == "" {
 		return nil, errors.New("directoryName must be set")
@@ -526,6 +519,13 @@ func makeTmpZip(directoryName string, entries []DirectoryEntry) (*zipResult, err
 		return nil, errors.New("directoryName must not include sub directories")
 	}
 
+	f, err := os.CreateTemp("", "wormhole-william-dir")
+	if err != nil {
+		return nil, err
+	}
+
+	defer os.Remove(f.Name())
+
 	w := zip.NewWriter(f)
 
 	var totalBytes int64
@@ -533,14 +533,13 @@ func makeTmpZip(directoryName string, entries []DirectoryEntry) (*zipResult, err
 	prefixPath := filepath.ToSlash(directoryName) + "/"
 
 	for _, entry := range entries {
-		entryPath := filepath.ToSlash(entry.Path)
-
-		if !strings.HasPrefix(entryPath, prefixPath) {
+		path, hasPrefix := strings.CutPrefix(filepath.ToSlash(entry.Path), prefixPath)
+		if !hasPrefix {
 			return nil, errors.New("each directory entry must be prefixed with the directoryName")
 		}
 
 		header := &zip.FileHeader{
-			Name:   strings.TrimPrefix(entryPath, prefixPath),
+			Name:   path,
 			Method: zip.Deflate,
 		}
 
@@ -579,14 +578,12 @@ func makeTmpZip(directoryName string, entries []DirectoryEntry) (*zipResult, err
 		return nil, err
 	}
 
-	result := zipResult{
+	return &zipResult{
 		file:     f,
 		numBytes: totalBytes,
 		numFiles: int64(len(entries)),
 		zipSize:  zipSize,
-	}
-
-	return &result, nil
+	}, nil
 }
 
 func readSeekerSize(r io.ReadSeeker) (int64, error) {
