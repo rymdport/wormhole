@@ -105,7 +105,7 @@ var wsUpgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func prepareServerMsg(msg interface{}) {
+func prepareServerMsg(msg any) {
 	if r, ok := msg.(msgs.RendezvousType); ok {
 		r.SetType()
 	}
@@ -134,7 +134,7 @@ func prepareServerMsg(msg interface{}) {
 	}
 }
 
-var msgMap = map[string]interface{}{
+var msgMap = map[string]any{
 	"welcome":    msgs.Welcome{},
 	"bind":       msgs.Bind{},
 	"allocate":   msgs.Allocate{},
@@ -154,7 +154,7 @@ var msgMap = map[string]interface{}{
 	"closed":     msgs.ClosedResp{},
 }
 
-func serverUnmarshal(m []byte) (interface{}, error) {
+func serverUnmarshal(m []byte) (any, error) {
 	var genericMsg msgs.GenericServerMsg
 	err := json.Unmarshal(m, &genericMsg)
 	if err != nil {
@@ -188,7 +188,7 @@ func (ts *TestServer) handleWS(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	var sendMu sync.Mutex
-	sendMsg := func(msg interface{}) {
+	sendMsg := func(msg any) {
 		prepareServerMsg(msg)
 		sendMu.Lock()
 		defer sendMu.Unlock()
@@ -212,7 +212,7 @@ func (ts *TestServer) handleWS(w http.ResponseWriter, r *http.Request) {
 		sendMsg(ack)
 	}
 
-	errMsg := func(_ string, orig interface{}, reason error) {
+	errMsg := func(_ string, orig any, reason error) {
 		errPacket := &msgs.Error{
 			Error: reason.Error(),
 			Orig:  orig,

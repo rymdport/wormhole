@@ -266,10 +266,10 @@ func (r *ReleasedResp) GetType() string {
 
 // Error is sent by the server to indicate an error.
 type Error struct {
-	Type     string      `json:"type" rendezvous_value:"error"`
-	Error    string      `json:"error"`
-	Orig     interface{} `json:"orig"`
-	ServerTx float64     `json:"server_tx"`
+	Type     string  `json:"type" rendezvous_value:"error"`
+	Error    string  `json:"error"`
+	Orig     any     `json:"orig"`
+	ServerTx float64 `json:"server_tx"`
 }
 
 func (e *Error) SetType() {

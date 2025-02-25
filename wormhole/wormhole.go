@@ -83,9 +83,8 @@ func (c *Client) appID() string {
 func (c *Client) wordCount() uint {
 	if c.PassPhraseComponentLength > 1 {
 		return uint(c.PassPhraseComponentLength)
-	} else {
-		return 2
 	}
+	return 2
 }
 
 func (c *Client) relayAddr() string {
@@ -96,9 +95,6 @@ func (c *Client) relayAddr() string {
 }
 
 func (c *Client) validateRelayAddr() error {
-	if c.relayAddr() == "" {
-		return nil
-	}
 	_, _, err := net.SplitHostPort(c.relayAddr())
 	return err
 }
@@ -111,7 +107,7 @@ type SendResult struct {
 
 var errDecryptFailed = errors.New("decrypt message failed")
 
-func openAndUnmarshal(v interface{}, mb rendezvous.MailboxEvent, sharedKey []byte) error {
+func openAndUnmarshal(v any, mb rendezvous.MailboxEvent, sharedKey []byte) error {
 	keySlice := derivePhaseKey(string(sharedKey), mb.Side, mb.Phase)
 	nonceAndSealedMsg, err := hex.DecodeString(mb.Body)
 	if err != nil {
@@ -145,7 +141,7 @@ func sendEncryptedMessage(ctx context.Context, rc *rendezvous.Client, msg, share
 	return rc.AddMessage(ctx, phase, hexNonceAndSealedMsg)
 }
 
-func jsonHexMarshal(msg interface{}) string {
+func jsonHexMarshal(msg any) string {
 	jsonMsg, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -154,7 +150,7 @@ func jsonHexMarshal(msg interface{}) string {
 	return hex.EncodeToString(jsonMsg)
 }
 
-func jsonHexUnmarshal(hexStr string, msg interface{}) error {
+func jsonHexUnmarshal(hexStr string, msg any) error {
 	b, err := hex.DecodeString(hexStr)
 	if err != nil {
 		return err
@@ -609,7 +605,7 @@ func (cc *clientProtocol) WriteAppData(ctx context.Context, v *genericMessage) e
 	return sendEncryptedMessage(ctx, cc.rc, jsonOut, cc.sharedKey, cc.sideID, phase)
 }
 
-func (cc *clientProtocol) openAndUnmarshal(phase string, v interface{}) error {
+func (cc *clientProtocol) openAndUnmarshal(phase string, v any) error {
 	gotMsg := <-cc.ch
 	if gotMsg.Error != nil {
 		return gotMsg.Error
@@ -622,7 +618,7 @@ func (cc *clientProtocol) openAndUnmarshal(phase string, v interface{}) error {
 	return openAndUnmarshal(v, gotMsg, cc.sharedKey)
 }
 
-func (cc *clientProtocol) readPlaintext(ctx context.Context, phase string, v interface{}) error {
+func (cc *clientProtocol) readPlaintext(ctx context.Context, phase string, v any) error {
 	var gotMsg rendezvous.MailboxEvent
 	select {
 	case gotMsg = <-cc.ch:
