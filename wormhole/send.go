@@ -356,17 +356,14 @@ func (c *Client) sendFileDirectory(ctx context.Context, offer *offerMsg, r io.Re
 			return
 		}
 
-		cryptor := newTransportCryptor(conn, transitKey, "transit_record_receiver_key", "transit_record_sender_key")
+		cryptor := newTransportCryptor(conn, transitKey, []byte("transit_record_receiver_key"), []byte("transit_record_sender_key"))
 
 		recordSize := (1 << 14)
 		// chunk
 		recordSlice := make([]byte, recordSize-secretbox.Overhead)
 		hasher := sha256.New()
 
-		var (
-			progress  int64
-			totalSize int64
-		)
+		var totalSize int64
 		if offer.File != nil {
 			totalSize = offer.File.FileSize
 		} else if offer.Directory != nil {
@@ -382,6 +379,7 @@ func (c *Client) sendFileDirectory(ctx context.Context, offer *offerMsg, r io.Re
 			conn.Close()
 		}()
 
+		var progress int64
 		for {
 			n, err := r.Read(recordSlice)
 			if n > 0 {

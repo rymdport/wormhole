@@ -56,15 +56,15 @@ type transportCryptor struct {
 	writeKey       [32]byte
 }
 
-func newTransportCryptor(c net.Conn, transitKey []byte, readPurpose, writePurpose string) *transportCryptor {
-	r := hkdf.New(sha256.New, transitKey, nil, []byte(readPurpose))
+func newTransportCryptor(c net.Conn, transitKey, readPurpose, writePurpose []byte) *transportCryptor {
+	r := hkdf.New(sha256.New, transitKey, nil, readPurpose)
 	var readKey [32]byte
 	_, err := io.ReadFull(r, readKey[:])
 	if err != nil {
 		panic(err)
 	}
 
-	r = hkdf.New(sha256.New, transitKey, nil, []byte(writePurpose))
+	r = hkdf.New(sha256.New, transitKey, nil, writePurpose)
 	var writeKey [32]byte
 	_, err = io.ReadFull(r, writeKey[:])
 	if err != nil {

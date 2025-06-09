@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -108,7 +109,7 @@ type SendResult struct {
 var errDecryptFailed = errors.New("decrypt message failed")
 
 func openAndUnmarshal(v any, mb rendezvous.MailboxEvent, sharedKey []byte) error {
-	keySlice := derivePhaseKey(string(sharedKey), mb.Side, mb.Phase)
+	keySlice := derivePhaseKey(sharedKey, mb.Side, mb.Phase)
 	nonceAndSealedMsg, err := hex.DecodeString(mb.Body)
 	if err != nil {
 		return err
@@ -131,7 +132,7 @@ func sendEncryptedMessage(ctx context.Context, rc *rendezvous.Client, msg, share
 	var sealKey [32]byte
 	nonce := crypto.RandNonce()
 
-	msgKey := derivePhaseKey(string(sharedKey), sideID, phase)
+	msgKey := derivePhaseKey(sharedKey, sideID, phase)
 	copy(sealKey[:], msgKey)
 
 	sealedMsg := secretbox.Seal(nil, msg, &nonce, &sealKey)
@@ -156,12 +157,12 @@ func jsonHexUnmarshal(hexStr string, msg any) error {
 
 const secreboxKeySize = 32
 
-func derivePhaseKey(key, side, phase string) []byte {
+func derivePhaseKey(key []byte, side, phase string) []byte {
 	sideSha := sha256.Sum256([]byte(side))
 	phaseSha := sha256.Sum256([]byte(phase))
-	purpose := "wormhole:phase:" + string(sideSha[:]) + string(phaseSha[:])
+	purpose := slices.Concat([]byte("wormhole:phase:"), sideSha[:], phaseSha[:])
 
-	r := hkdf.New(sha256.New, []byte(key), nil, []byte(purpose))
+	r := hkdf.New(sha256.New, key, nil, purpose)
 	out := make([]byte, secreboxKeySize)
 
 	_, err := io.ReadFull(r, out)
@@ -172,9 +173,9 @@ func derivePhaseKey(key, side, phase string) []byte {
 }
 
 func deriveTransitKey(key []byte, appID string) []byte {
-	purpose := appID + "/transit-key"
+	purpose := []byte(appID + "/transit-key")
 
-	r := hkdf.New(sha256.New, key, nil, []byte(purpose))
+	r := hkdf.New(sha256.New, key, nil, purpose)
 	out := make([]byte, secreboxKeySize)
 
 	_, err := io.ReadFull(r, out)
@@ -185,9 +186,9 @@ func deriveTransitKey(key []byte, appID string) []byte {
 }
 
 func deriveVerifier(key []byte) []byte {
-	purpose := "wormhole:verifier"
+	purpose := []byte("wormhole:verifier")
 
-	r := hkdf.New(sha256.New, key, nil, []byte(purpose))
+	r := hkdf.New(sha256.New, key, nil, purpose)
 	out := make([]byte, secreboxKeySize)
 
 	_, err := io.ReadFull(r, out)
