@@ -151,12 +151,7 @@ func jsonHexMarshal(msg any) string {
 }
 
 func jsonHexUnmarshal(hexStr string, msg any) error {
-	b, err := hex.DecodeString(hexStr)
-	if err != nil {
-		return err
-	}
-
-	return json.Unmarshal(b, msg)
+	return json.NewDecoder(hex.NewDecoder(strings.NewReader(hexStr))).Decode(msg)
 }
 
 const secreboxKeySize = 32
@@ -578,8 +573,7 @@ func (cc *clientProtocol) WriteVersion(ctx context.Context) error {
 		return err
 	}
 
-	err = sendEncryptedMessage(ctx, cc.rc, jsonOut, cc.sharedKey, cc.sideID, phase)
-	return err
+	return sendEncryptedMessage(ctx, cc.rc, jsonOut, cc.sharedKey, cc.sideID, phase)
 }
 
 func (cc *clientProtocol) ReadVersion() (*appVersionsMsg, error) {
@@ -633,12 +627,7 @@ func (cc *clientProtocol) readPlaintext(ctx context.Context, phase string, v any
 		return fmt.Errorf("got unexpected phase while waiting for %s: %s", phase, gotMsg.Phase)
 	}
 
-	err := jsonHexUnmarshal(gotMsg.Body, &v)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return jsonHexUnmarshal(gotMsg.Body, v)
 }
 
 type collectType int
