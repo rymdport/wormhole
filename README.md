@@ -1,4 +1,4 @@
-# wormhole-william
+# Wormhole
 
 Wormhole is a Go implementation of [magic wormhole](https://magic-wormhole.readthedocs.io/en/latest/). It provides secure end-to-end encrypted file transfers between computers. The endpoints are connected using the same "wormhole code".
 This client is compatible with the official Python and Rust clients for magic-wormhole.
@@ -8,7 +8,7 @@ The goal here is to have a faster release cadance and be more actively maintaine
 
 ## Improvements over upstream
 - Faster release cycle and more actively maintained.
-- Contains various code improvements and moderinisations that would have required breaking changes. 
+- Contains various code improvements and moderinisations that would have required breaking changes.
   - Converted many global variables into constants.
   - Optimized the `wordlist` package for improved performance and memory usage.
   - Removed deprecated APIs.
