@@ -573,23 +573,15 @@ func (c *Client) readMessages(ctx context.Context) {
 			break
 		}
 
-		var genericMsg msgs.GenericServerMsg
-		err = json.Unmarshal(msg, &genericMsg)
+		var mm msgs.Message
+		err = json.Unmarshal(msg, &mm)
 		if err != nil {
 			wrappedErr := fmt.Errorf("JSON unmarshal: %s", err)
 			c.closeWithError(wrappedErr)
 			break
 		}
 
-		if genericMsg.Type == "message" {
-			var mm msgs.Message
-			err := json.Unmarshal(msg, &mm)
-			if err != nil {
-				wrappedErr := fmt.Errorf("JSON unmarshal: %s", err)
-				c.closeWithError(wrappedErr)
-				break
-			}
-
+		if mm.Type == "message" {
 			mboxMsg := MailboxEvent{
 				Side:  mm.Side,
 				Phase: mm.Phase,
@@ -613,7 +605,7 @@ func (c *Client) readMessages(ctx context.Context) {
 			c.pendingMsgMu.Lock()
 			c.pendingMsgs = append(c.pendingMsgs, pendingMsg{
 				id:      nextID,
-				msgType: genericMsg.Type,
+				msgType: mm.Type,
 				raw:     msg,
 			})
 
@@ -625,6 +617,5 @@ func (c *Client) readMessages(ctx context.Context) {
 			}
 			c.pendingMsgMu.Unlock()
 		}
-
 	}
 }
