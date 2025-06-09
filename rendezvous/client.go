@@ -159,12 +159,10 @@ func (c *Client) Connect(ctx context.Context) (*ConnectInfo, error) {
 		return nil, err
 	}
 
-	info := ConnectInfo{
+	return &ConnectInfo{
 		MOTD:              welcome.Welcome.MOTD,
 		CurrentCLIVersion: welcome.Welcome.CurrentCLIVersion,
-	}
-
-	return &info, nil
+	}, nil
 }
 
 func (c *Client) searchPendingMsgs(msgType string) *pendingMsg {
@@ -220,7 +218,6 @@ func (c *Client) readMsg(ctx context.Context, m msgs.RendezvousType) error {
 
 		msg := c.searchPendingMsgs(expectMsgType)
 		if msg != nil {
-
 			err := json.Unmarshal(msg.raw, m)
 			if err != nil {
 				wrappedErr := fmt.Errorf("JSON unmarshal: %s", err)
@@ -279,16 +276,13 @@ func (c *Client) AttachMailbox(ctx context.Context, nameplate string) error {
 // ListNameplates returns a list of active nameplates on the
 // rendezvous server.
 func (c *Client) ListNameplates(ctx context.Context) ([]string, error) {
-	var (
-		nameplatesResp msgs.Nameplates
-		listReq        msgs.List
-	)
-
+	var listReq msgs.List
 	_, err := c.sendAndWait(ctx, &listReq)
 	if err != nil {
 		return nil, err
 	}
 
+	var nameplatesResp msgs.Nameplates
 	err = c.readMsg(ctx, &nameplatesResp)
 	if err != nil {
 		return nil, err
@@ -414,8 +408,6 @@ func (c *Client) Close(ctx context.Context, mood Mood) error {
 		}
 	}()
 
-	var closedResp msgs.ClosedResp
-
 	closeReq := msgs.Close{
 		Mood:    string(mood),
 		Mailbox: c.mailboxID,
@@ -426,8 +418,8 @@ func (c *Client) Close(ctx context.Context, mood Mood) error {
 		return err
 	}
 
-	err = c.readMsg(ctx, &closedResp)
-	return err
+	var closedResp msgs.ClosedResp
+	return c.readMsg(ctx, &closedResp)
 }
 
 // sendAndWait sends a message to the rendezvous server and waits
@@ -438,19 +430,18 @@ func (c *Client) sendAndWait(ctx context.Context, msg msgs.RendezvousTypeID) (*m
 	msg.SetType()
 
 	c.sendCmdMu.Lock()
+	defer c.sendCmdMu.Unlock()
+
 	err := wsjson.Write(ctx, c.wsClient, msg)
 	if err != nil {
-		c.sendCmdMu.Unlock()
 		return nil, err
 	}
 
 	var ack msgs.Ack
 	err = c.readMsg(ctx, &ack)
 	if err != nil {
-		c.sendCmdMu.Unlock()
 		return nil, err
 	}
-	c.sendCmdMu.Unlock()
 
 	if ack.ID != id {
 		return nil, fmt.Errorf("got ack for different message. got %s send: %+v", ack.ID, msg)
@@ -486,16 +477,13 @@ func (c *Client) bind(ctx context.Context, side, appID string) error {
 }
 
 func (c *Client) allocateNameplate(ctx context.Context) (*msgs.AllocatedResp, error) {
-	var (
-		allocReq    msgs.Allocate
-		allocedResp msgs.AllocatedResp
-	)
-
+	var allocReq msgs.Allocate
 	_, err := c.sendAndWait(ctx, &allocReq)
 	if err != nil {
 		return nil, err
 	}
 
+	var allocedResp msgs.AllocatedResp
 	err = c.readMsg(ctx, &allocedResp)
 	if err != nil {
 		return nil, err
@@ -505,17 +493,13 @@ func (c *Client) allocateNameplate(ctx context.Context) (*msgs.AllocatedResp, er
 }
 
 func (c *Client) claimNameplate(ctx context.Context, nameplate string) (*msgs.ClaimedResp, error) {
-	var claimResp msgs.ClaimedResp
-
-	claimReq := msgs.Claim{
-		Nameplate: nameplate,
-	}
-
+	claimReq := msgs.Claim{Nameplate: nameplate}
 	_, err := c.sendAndWait(ctx, &claimReq)
 	if err != nil {
 		return nil, err
 	}
 
+	var claimResp msgs.ClaimedResp
 	err = c.readMsg(ctx, &claimResp)
 	if err != nil {
 		return nil, err
@@ -525,23 +509,14 @@ func (c *Client) claimNameplate(ctx context.Context, nameplate string) (*msgs.Cl
 }
 
 func (c *Client) releaseNameplate(ctx context.Context, nameplate string) error {
-	var releasedResp msgs.ReleasedResp
-
-	releaseReq := msgs.Release{
-		Nameplate: nameplate,
-	}
-
+	releaseReq := msgs.Release{Nameplate: nameplate}
 	_, err := c.sendAndWait(ctx, &releaseReq)
 	if err != nil {
 		return err
 	}
 
-	err = c.readMsg(ctx, &releasedResp)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	var releasedResp msgs.ReleasedResp
+	return c.readMsg(ctx, &releasedResp)
 }
 
 func (c *Client) openMailbox(ctx context.Context, mailbox string) error {
@@ -549,10 +524,7 @@ func (c *Client) openMailbox(ctx context.Context, mailbox string) error {
 	c.mailboxID = mailbox
 	c.pendingMsgMu.Unlock()
 
-	open := msgs.Open{
-		Mailbox: mailbox,
-	}
-
+	open := msgs.Open{Mailbox: mailbox}
 	_, err := c.sendAndWait(ctx, &open)
 	return err
 }
