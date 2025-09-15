@@ -488,17 +488,9 @@ func (t *fileTransport) listenRelay() error {
 	return nil
 }
 
-func (t *fileTransport) waitForRelayPeer(conn net.Conn, cancelCh chan struct{}) error {
-	okCh := make(chan struct{})
-	go func() {
-		select {
-		case <-cancelCh:
-			conn.Close()
-		case <-okCh:
-		}
-	}()
-
-	defer close(okCh)
+func (t *fileTransport) waitForRelayPeer(ctx context.Context, conn net.Conn) error {
+	stopf := context.AfterFunc(ctx, func() { conn.Close() })
+	defer stopf()
 
 	gotOk := make([]byte, 3)
 	_, err := io.ReadFull(conn, gotOk)
@@ -517,16 +509,16 @@ func (t *fileTransport) waitForRelayPeer(conn net.Conn, cancelCh chan struct{}) 
 
 func (t *fileTransport) acceptConnection(ctx context.Context) (net.Conn, error) {
 	readyCh := make(chan net.Conn)
-	cancelCh := make(chan struct{})
-	acceptErrCh := make(chan error, 1)
+	cancelCtx, cancel := context.WithCancelCause(ctx)
+	defer cancel(nil)
 
 	if t.relayConn != nil {
 		go func() {
-			waitErr := t.waitForRelayPeer(t.relayConn, cancelCh)
+			waitErr := t.waitForRelayPeer(cancelCtx, t.relayConn)
 			if waitErr != nil {
 				return
 			}
-			t.handleIncomingConnection(t.relayConn, readyCh, cancelCh)
+			t.handleIncomingConnection(cancelCtx, t.relayConn, readyCh)
 		}()
 	}
 
@@ -539,24 +531,19 @@ func (t *fileTransport) acceptConnection(ctx context.Context) (net.Conn, error) 
 				if err == io.EOF {
 					break
 				} else if err != nil {
-					acceptErrCh <- err
+					cancel(err)
 					break
 				}
 
-				go t.handleIncomingConnection(conn, readyCh, cancelCh)
+				go t.handleIncomingConnection(cancelCtx, conn, readyCh)
 			}
 		}()
 	}
 
 	select {
 	case <-ctx.Done():
-		close(cancelCh)
 		return nil, ctx.Err()
-	case acceptErr := <-acceptErrCh:
-		close(cancelCh)
-		return nil, acceptErr
 	case conn := <-readyCh:
-		close(cancelCh)
 		_, err := conn.Write([]byte("go\n"))
 		if err != nil {
 			return nil, err
@@ -566,21 +553,13 @@ func (t *fileTransport) acceptConnection(ctx context.Context) (net.Conn, error) 
 	}
 }
 
-func (t *fileTransport) handleIncomingConnection(conn net.Conn, readyCh chan<- net.Conn, cancelCh chan struct{}) {
-	okCh := make(chan struct{})
-
-	go func() {
-		select {
-		case <-cancelCh:
-			conn.Close()
-		case <-okCh:
-		}
-	}()
+func (t *fileTransport) handleIncomingConnection(ctx context.Context, conn net.Conn, readyCh chan<- net.Conn) {
+	stopf := context.AfterFunc(ctx, func() { conn.Close() })
+	defer stopf()
 
 	_, err := conn.Write(t.senderHandshakeHeader())
 	if err != nil {
 		conn.Close()
-		close(okCh)
 		return
 	}
 
@@ -591,23 +570,16 @@ func (t *fileTransport) handleIncomingConnection(conn net.Conn, readyCh chan<- n
 	_, err = io.ReadFull(conn, gotHeader)
 	if err != nil {
 		conn.Close()
-		close(okCh)
 		return
 	}
 
 	if subtle.ConstantTimeCompare(gotHeader, expectHeader) != 1 {
 		conn.Close()
-		close(okCh)
 		return
 	}
 
 	select {
-	case okCh <- struct{}{}:
-	case <-cancelCh:
-	}
-
-	select {
-	case <-cancelCh:
+	case <-ctx.Done():
 		// One of the other connections won, shut this one down
 		conn.Write([]byte("nevermind\n"))
 		conn.Close()
