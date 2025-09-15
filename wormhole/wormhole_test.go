@@ -217,7 +217,7 @@ func TestWormholeFileReject(t *testing.T) {
 	c1.TransitRelayAddress = ""
 
 	fileContent := make([]byte, 1<<16)
-	for i := 0; i < len(fileContent); i++ {
+	for i := range fileContent {
 		fileContent[i] = byte(i)
 	}
 
@@ -265,7 +265,7 @@ func TestWormholeFileTransportSendRecvViaRelayServer(t *testing.T) {
 	c1.TransitRelayAddress = relayServer.addr
 
 	fileContent := make([]byte, 1<<16)
-	for i := 0; i < len(fileContent); i++ {
+	for i := range fileContent {
 		fileContent[i] = byte(i)
 	}
 
@@ -370,7 +370,7 @@ func TestWormholeFileTransportRecvMidStreamCancel(t *testing.T) {
 	c1.TransitRelayAddress = relayServer.addr
 
 	fileContent := make([]byte, 1<<16)
-	for i := 0; i < len(fileContent); i++ {
+	for i := range fileContent {
 		fileContent[i] = byte(i)
 	}
 
@@ -432,7 +432,7 @@ func TestWormholeFileTransportSendMidStreamCancel(t *testing.T) {
 	c1.TransitRelayAddress = relayServer.addr
 
 	fileContent := make([]byte, 1<<16)
-	for i := 0; i < len(fileContent); i++ {
+	for i := range fileContent {
 		fileContent[i] = byte(i)
 	}
 
@@ -485,7 +485,7 @@ func TestPendingSendCancelable(t *testing.T) {
 	}
 
 	fileContent := make([]byte, 1<<16)
-	for i := 0; i < len(fileContent); i++ {
+	for i := range fileContent {
 		fileContent[i] = byte(i)
 	}
 
@@ -583,7 +583,7 @@ func TestPendingRecvCancelable(t *testing.T) {
 
 	defer rc.Close(ctx, rendezvous.Happy)
 
-	for i := 0; i < 20; i++ {
+	for range 20 {
 		nameplates, err := rc.ListNameplates(ctx)
 		if err != nil {
 			t.Fatal(err)
@@ -656,7 +656,7 @@ func TestWormholeDirectoryTransportSendRecvDirect(t *testing.T) {
 	c1.TransitRelayAddress = ""
 
 	personalizeContent := make([]byte, 1<<16)
-	for i := 0; i < len(personalizeContent); i++ {
+	for i := range personalizeContent {
 		personalizeContent[i] = byte(i)
 	}
 

@@ -7,7 +7,7 @@ var globalWords string
 func BenchmarkChooseWords(b *testing.B) {
 	words := ""
 
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		words = ChooseWords(10)
 	}
 
