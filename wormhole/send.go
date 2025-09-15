@@ -71,9 +71,10 @@ func (c *Client) SendText(ctx context.Context, msg string, opts ...SendOption) (
 		var returnErr error
 		defer func() {
 			mood := rendezvous.Errory
-			if returnErr == nil {
+			switch returnErr {
+			case nil:
 				mood = rendezvous.Happy
-			} else if returnErr == errDecryptFailed {
+			case errDecryptFailed:
 				mood = rendezvous.Scary
 			}
 
@@ -233,9 +234,10 @@ func (c *Client) sendFileDirectory(ctx context.Context, offer *offerMsg, r io.Re
 		var returnErr error
 		defer func() {
 			mood := rendezvous.Errory
-			if returnErr == nil {
+			switch returnErr {
+			case nil:
 				mood = rendezvous.Happy
-			} else if returnErr == errDecryptFailed {
+			case errDecryptFailed:
 				mood = rendezvous.Scary
 			}
 
@@ -374,10 +376,10 @@ func (c *Client) sendFileDirectory(ctx context.Context, offer *offerMsg, r io.Re
 		ctx, cancel = context.WithCancel(ctx)
 		defer cancel()
 
-		go func() {
-			<-ctx.Done()
+		stopf := context.AfterFunc(ctx, func() {
 			conn.Close()
-		}()
+		})
+		defer stopf()
 
 		var progress int64
 		for {
