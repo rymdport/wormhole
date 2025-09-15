@@ -13,7 +13,6 @@ import (
 	"slices"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/rymdport/wormhole/internal/crypto"
 	"github.com/rymdport/wormhole/rendezvous"
@@ -289,35 +288,17 @@ type msgCollector struct {
 
 	subscribe chan *collectSubscription
 
-	closeMu sync.Mutex
-	closed  bool
-	done    chan error
+	done  context.Context
+	close context.CancelCauseFunc
 }
 
 func newMsgCollector(sharedKey []byte) *msgCollector {
+	ctx, cancel := context.WithCancelCause(context.Background())
 	return &msgCollector{
 		sharedKey: sharedKey,
 		subscribe: make(chan *collectSubscription),
-		done:      make(chan error, 1),
-	}
-}
-
-func (c *msgCollector) close() {
-	c.closeMu.Lock()
-	defer c.closeMu.Unlock()
-	if !c.closed {
-		c.closed = true
-		close(c.done)
-	}
-}
-
-func (c *msgCollector) closeWithErr(err error) {
-	c.closeMu.Lock()
-	defer c.closeMu.Unlock()
-	if !c.closed {
-		c.closed = true
-		c.done <- err
-		close(c.done)
+		done:      ctx,
+		close:     cancel,
 	}
 }
 
@@ -380,7 +361,8 @@ func (c *msgCollector) waitFor(msg collectable) (collectResult, error) {
 	}
 
 	select {
-	case err := <-c.done:
+	case <-c.done.Done():
+		err := context.Cause(c.done)
 		if err != nil {
 			return collectResult{}, err
 		}
@@ -411,7 +393,7 @@ func (c *msgCollector) collect(ch <-chan rendezvous.MailboxEvent) {
 	waiters := make(map[collectType]*collectSubscription)
 
 	errorResult := func(e error) {
-		c.closeWithErr(e)
+		c.close(e)
 
 		for t, waiter := range waiters {
 			waiter.result <- collectResult{
@@ -424,7 +406,7 @@ func (c *msgCollector) collect(ch <-chan rendezvous.MailboxEvent) {
 
 	for {
 		select {
-		case <-c.done:
+		case <-c.done.Done():
 			return
 		case sub := <-c.subscribe:
 			collectType := sub.collectMsg.Type()
@@ -445,7 +427,7 @@ func (c *msgCollector) collect(ch <-chan rendezvous.MailboxEvent) {
 			}
 		case gotMsg, ok := <-ch:
 			if !ok {
-				c.close()
+				c.close(nil)
 				return
 			}
 			if gotMsg.Error != nil {

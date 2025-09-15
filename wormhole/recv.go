@@ -95,7 +95,7 @@ func (c *Client) Receive(ctx context.Context, code string) (fr *IncomingMessage,
 	if err != nil {
 		return nil, err
 	}
-	defer collector.close()
+	defer collector.close(nil)
 
 	var offer offerMsg
 	err = collector.waitForOffer(&offer)
